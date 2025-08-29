@@ -1,6 +1,3 @@
---== Auto Execute Saat Rejoin ==--
-queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/yoroses/yobox/refs/heads/main/sibuatan.lua'))()")
-
 -- Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -19,6 +16,12 @@ local function teleportTo(part)
     end
 end
 
+local function getCheckpoint46()
+    local checkpoints = workspace:FindFirstChild("Checkpoints")
+    if not checkpoints then return nil end
+    return checkpoints:FindFirstChild("Checkpoint46")
+end
+
 local function getTeddyHandle()
     local love = workspace:FindFirstChild("Love Teddy")
     if not love then return nil end
@@ -27,14 +30,37 @@ local function getTeddyHandle()
     return val:FindFirstChild("Handle")
 end
 
---== Main Logic ==--
-task.wait(2) -- kasih jeda biar map kebuka
-
-local teddy = getTeddyHandle()
-if teddy then
-    teleportTo(teddy)
-    task.wait(1)
+local function respawnAtBase()
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum then hum.Health = 0 end
+    local newChar = LocalPlayer.CharacterAdded:Wait()
+    task.wait(0.5)
+    return newChar:WaitForChild("HumanoidRootPart", 5)
 end
 
--- langsung rejoin otomatis
-TeleportService:Teleport(game.PlaceId, LocalPlayer)
+--== Main Logic ==--
+task.spawn(function()
+    task.wait(2) -- jeda biar map kebuka
+
+    -- 1) Teleport ke Checkpoint46
+    local cp46 = getCheckpoint46()
+    if cp46 then
+        teleportTo(cp46)
+        task.wait(1)
+    end
+
+    -- 2) Teleport ke Teddy
+    local teddy = getTeddyHandle()
+    if teddy then
+        teleportTo(teddy)
+        task.wait(1)
+    end
+
+    -- 3) Respawn ke base
+    respawnAtBase()
+    task.wait(1)
+
+    -- 4) Auto Rejoin
+    TeleportService:Teleport(game.PlaceId, LocalPlayer)
+end)
