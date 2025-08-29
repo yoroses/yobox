@@ -17,17 +17,17 @@ local function teleportTo(part)
 end
 
 local function getCheckpoint46()
-    local checkpoints = workspace:FindFirstChild("Checkpoints")
+    local checkpoints = workspace:WaitForChild("Checkpoints", 10) -- tunggu max 10 detik
     if not checkpoints then return nil end
-    return checkpoints:FindFirstChild("Checkpoint46")
+    return checkpoints:WaitForChild("Checkpoint46", 10)
 end
 
 local function getTeddyHandle()
-    local love = workspace:FindFirstChild("Love Teddy")
+    local love = workspace:WaitForChild("Love Teddy", 10)
     if not love then return nil end
-    local val = love:FindFirstChild("ValentineTeddy")
+    local val = love:WaitForChild("ValentineTeddy", 10)
     if not val then return nil end
-    return val:FindFirstChild("Handle")
+    return val:WaitForChild("Handle", 10)
 end
 
 local function respawnAtBase()
@@ -41,13 +41,15 @@ end
 
 --== Main Logic ==--
 task.spawn(function()
-    task.wait(2) -- jeda biar map kebuka
+    task.wait(2) -- jeda awal
 
     -- 1) Teleport ke Checkpoint46
     local cp46 = getCheckpoint46()
     if cp46 then
         teleportTo(cp46)
         task.wait(1)
+    else
+        warn("Checkpoint46 tidak ditemukan")
     end
 
     -- 2) Teleport ke Teddy
@@ -55,6 +57,8 @@ task.spawn(function()
     if teddy then
         teleportTo(teddy)
         task.wait(1)
+    else
+        warn("Teddy tidak ditemukan")
     end
 
     -- 3) Respawn ke base
