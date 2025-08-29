@@ -1,14 +1,14 @@
---== yagitu_countdown.lua ==--
+--== yagitu_countdown_respawn.lua ==--
 
 -- Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local TeleportService = game:GetService("TeleportService")
 local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 -- Koordinat teleport
 local targetPosition = Vector3.new(1939, 1344, -2074)
-local rejoinDelay = 5 -- detik sebelum rejoin
+local waitAfterTP = 10 -- detik sebelum respawn
 
 --== GUI Setup ==--
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
@@ -81,26 +81,25 @@ local function teleportToCoordinate()
     end
 end
 
-local function rejoinMap()
-    Status.Text = "Status: Rejoining map..."
-    queue_on_teleport([[
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/yoroses/yobox/main/yagitu_countdown.lua"))()
-    ]])
-    TeleportService:Teleport(game.PlaceId, LocalPlayer)
+local function respawnCharacter()
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then
+        Status.Text = "Status: Respawning..."
+        char:BreakJoints() -- memaksa respawn
+    end
 end
 
---== Auto Loop Teleport + Countdown ==--
+--== Auto Loop Teleport + Respawn ==--
 spawn(function()
     while true do
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             teleportToCoordinate()
-            -- Countdown sebelum rejoin
-            for i = rejoinDelay, 1, -1 do
-                Status.Text = "Status: Rejoining in "..i.." seconds..."
-                task.wait(1)
-            end
-            rejoinMap()
-            task.wait(10) -- tunggu map reload
+            Status.Text = "Status: Waiting "..waitAfterTP.." seconds before respawn..."
+            task.wait(waitAfterTP)
+            respawnCharacter()
+            -- Tunggu character respawn
+            LocalPlayer.CharacterAdded:Wait()
+            task.wait(1)
         else
             LocalPlayer.CharacterAdded:Wait()
         end
