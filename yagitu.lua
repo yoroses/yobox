@@ -1,4 +1,4 @@
---== yagitu_countdown_respawn.lua ==--
+--== yagitu_auto_teleport.lua ==--
 
 -- Services
 local Players = game:GetService("Players")
@@ -8,15 +8,15 @@ local RunService = game:GetService("RunService")
 
 -- Koordinat teleport
 local targetPosition = Vector3.new(1939, 1344, -2074)
-local waitAfterTP = 10 -- detik sebelum respawn
+local waitAfterTP = 333 -- detik sebelum teleport lagi
 
 --== GUI Setup ==--
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 ScreenGui.ResetOnSpawn = false
 
 local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0, 380, 0, 200)
-Frame.Position = UDim2.new(0.5, -190, 0.5, -100)
+Frame.Size = UDim2.new(0, 380, 0, 150)
+Frame.Position = UDim2.new(0.5, -190, 0.5, -75)
 Frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
 Frame.BackgroundTransparency = 0.2
 Frame.Active = true
@@ -78,28 +78,18 @@ local function teleportToCoordinate()
     if hrp then
         hrp.CFrame = CFrame.new(targetPosition)
         Status.Text = "Status: Teleported to X:"..math.floor(targetPosition.X).." Y:"..math.floor(targetPosition.Y).." Z:"..math.floor(targetPosition.Z)
+    else
+        Status.Text = "Status: HumanoidRootPart not found!"
     end
 end
 
-local function respawnCharacter()
-    local char = LocalPlayer.Character
-    if char and char:FindFirstChild("Humanoid") then
-        Status.Text = "Status: Respawning..."
-        char:BreakJoints() -- memaksa respawn
-    end
-end
-
---== Auto Loop Teleport + Respawn ==--
+--== Auto Loop Teleport ==--
 spawn(function()
     while true do
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             teleportToCoordinate()
-            Status.Text = "Status: Waiting "..waitAfterTP.." seconds before respawn..."
+            Status.Text = "Status: Waiting "..waitAfterTP.." seconds before next teleport..."
             task.wait(waitAfterTP)
-            respawnCharacter()
-            -- Tunggu character respawn
-            LocalPlayer.CharacterAdded:Wait()
-            task.wait(1)
         else
             LocalPlayer.CharacterAdded:Wait()
         end
