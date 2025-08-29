@@ -1,4 +1,4 @@
---== yagitu.lua (GitHub-ready) ==--
+--== yagitu.lua (GitHub-ready, auto-loop + auto-rejoin) ==--
 
 -- Services
 local Players = game:GetService("Players")
@@ -81,19 +81,19 @@ local function teleportToCoordinate()
 end
 
 local function rejoinMap()
+    Status.Text = "Status: Rejoining map..."
     queue_on_teleport([[
         loadstring(game:HttpGet("https://raw.githubusercontent.com/yoroses/yobox/main/yagitu.lua"))()
     ]])
     TeleportService:Teleport(game.PlaceId, LocalPlayer)
 end
 
---== Auto Loop Teleport ==--
+--== Auto Loop Teleport + Rejoin ==
 spawn(function()
     while true do
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             teleportToCoordinate()
             wait(5)
-            Status.Text = "Status: Rejoining map..."
             rejoinMap()
             wait(10) -- tunggu map reload
         else
