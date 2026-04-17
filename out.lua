@@ -2214,7 +2214,7 @@ local function main()
 						Decompile = true,
 						RemovePlayerCharacters = false
 					})
-				end)
+				end, "rbxm")
 			elseif #sList > 1 then
 				for i = 1,#sList do
 					-- sList[i].Obj.Name.." ("..sList[1].Obj.ClassName..")"
@@ -2224,7 +2224,7 @@ local function main()
 							Decompile = true,
 							RemovePlayerCharacters = false
 						})
-					end)
+					end, "rbxm")
 					
 					task.wait(0.1)
 				end
@@ -3447,6 +3447,7 @@ return search]==]
 end
 
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+
 end,
 ["Lib"] = function()
 --[[
@@ -3971,7 +3972,7 @@ local function main()
 		currentclickhandler = function()
 			if type(codeToSave) == "string" then
 				filename = (win.Elements.NameBox.TextBox.Text ~= "" and win.Elements.NameBox.TextBox.Text) or filename
-				currentextension = ext or filename:match("%.([^%.]+)$") or "txt"
+				currentextension = filename:match("%.([^%.]+)$") or ext or "txt"
 				filename = filename:gsub("%.[^.]+$", "") .. "." .. currentextension
 
 				local codeText = codeToSave or ""
@@ -3988,7 +3989,7 @@ local function main()
 				end
 			elseif type(codeToSave) == "function" then
 				filename = (win.Elements.NameBox.TextBox.Text ~= "" and win.Elements.NameBox.TextBox.Text) or filename
-				currentextension = ext or filename:match("%.([^%.]+)$") or "txt"
+				currentextension = filename:match("%.([^%.]+)$") or ext or "txt"
 				filename = filename:gsub("%.[^.]+$", "") .. "." .. currentextension
 
 				local s, msg = pcall(codeToSave,filename) -- callback
@@ -10729,6 +10730,7 @@ local function main()
 end
 
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+
 end,
 ["ModelViewer"] = function()
 --[[
@@ -11047,7 +11049,7 @@ local function main()
 							window:SetTitle(originalModel.Name.." - Model Viewer")
 						end
 					end
-				end)
+				end, "rbxm")
 			end
 		end})
 		
@@ -11136,6 +11138,7 @@ if gethsfuncs then
 else
 	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
+
 end,
 ["Properties"] = function()
 --[[
@@ -13090,7 +13093,7 @@ end
 local function main()
 	local SaveInstance = {}
 	local window, ListFrame
-	local fileName = "Place_"..game.PlaceId.."_"..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."_{TIMESTAMP}"
+	local fileName = "Place_"..game.PlaceId.."_"..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."_{TIMESTAMP}.rbxlx"
 	local Saving = false
 	
 	local SaveInstanceArgs = {
@@ -13330,6 +13333,9 @@ local function main()
 		FilenameTextBox.TextBox.Text = fileName
 		Button.MouseButton1Click:Connect(function()
 			local fileName = FilenameTextBox.TextBox.Text:gsub("{TIMESTAMP}", os.date("%d-%m-%Y_%H-%M-%S"))
+			if not fileName:match("%.[^%.]+$") then
+				fileName = fileName .. ".rbxlx"
+			end
 			window:SetTitle("Save Instance - Saving")
 			local s, result = pcall(env.saveinstance, game, fileName, SaveInstanceArgs)
 			if s then
@@ -13353,6 +13359,7 @@ if gethsfuncs then
 else
 	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
+
 end,
 ["ScriptViewer"] = function()
 --[[
